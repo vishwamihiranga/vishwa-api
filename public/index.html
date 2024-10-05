@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VISHWA API DASHBOARD</title>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f5f5;
+            --background-color: #ffffff;
+            --text-color: #333333;
+            --accent-color: #ff6b6b;
+            --success-color: #00C851;
+            --error-color: #ff4444;
+        }
+
+        .dark-mode {
+            --primary-color: rgb(255, 223, 0);
+            --secondary-color: rgb(44, 44, 44);
+            --background-color: rgb(26, 26, 26);
+            --text-color: #FFFFFF;
+            --accent-color: rgb(255, 140, 140);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            background-color: var(--background-color);
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+            transition: background-color 0.3s;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            animation: fadeIn 1s ease;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-top: 40px;
+        }
+
+        .description {
+            text-align: center;
+            margin-bottom: 30px;
+            font-style: italic;
+            color: var(--text-color);
+        }
+
+        .api-card {
+            background-color: var(--background-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease;
+        }
+
+        .api-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background-color: var(--primary-color);
+            color: #323232;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .api-header:hover {
+            background-color: rgb(255, 200, 0);
+        }
+
+        .api-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .api-status {
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        .api-status.unavailable {
+            background-color: var(--error-color);
+            color: #ffffff;
+        }
+
+        .api-status.available {
+            background-color: var(--success-color);
+            color: #ffffff;
+        }
+
+        .api-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .api-path {
+            font-family: monospace;
+            background-color: var(--secondary-color);
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            word-break: break-all;
+        }
+
+        .api-description {
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .api-result {
+            background-color: var(--secondary-color);
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: rgb(255, 200, 0);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: var(--success-color);
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        .author-info {
+            text-align: center;
+            margin-top: 30px;
+            font-style: italic;
+            color: rgb(136, 136, 136);
+        }
+
+        .monitor-board {
+            background-color: var(--background-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .monitor-item {
+            flex-basis: calc(20% - 10px);
+            text-align: center;
+            margin: 0 5px 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .monitor-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .monitor-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .monitor-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .monitor-value {
+            color: var(--primary-color);
+            font-size: 1.2em;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--secondary-color);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .search-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+
+        .dark-mode-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dark-mode-toggle:hover {
+            background-color: rgb(255, 200, 0);
+            transform: scale(1.1);
+        }
+
+        .get-api-key-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .get-api-key-btn:hover {
+            background-color: rgb(255, 200, 0);
+            transform: scale(1.05);
+        }
+        .system-info {
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .system-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .system-info h3 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.5em;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .system-info ul {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .system-info li {
+            background-color: rgba(255,255,255,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+        }
+        .system-info li:hover {
+            background-color: rgba(255,255,255,0.9);
+        }
+        .system-info strong {
+            font-weight: bold;
+            margin-right: 5px;
+            display: block;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .system-info span {
+            font-size: 1.1em;
+            color: #333;
+        }
+        .dark-mode .system-info {
+            background-color: #2a2a2a;
+            color: #fff;
+        }
+        .dark-mode .system-info h3 {
+            color: #fff;
+            border-bottom-color: #444;
+        }
+        .dark-mode .system-info li {
+            background-color: rgba(0,0,0,0.3);
+        }
+        .dark-mode .system-info li:hover {
+            background-color: rgba(0,0,0,0.5);
+        }
+        .dark-mode .system-info strong {
+            color: #aaa;
+        }
+        .dark-mode .system-info span {
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            .api-header {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .api-status {
+                margin-top: 10px;
+            }
+
+            .search-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .search-input {
+                width: 100%;
+                border-radius: 4px;
+                margin-bottom: 10px;
+            }
+
+            .search-btn {
+                width: 100%;
+                border-radius: 4px;
+            }
+
+            .monitor-item {
+                flex-basis: calc(50% - 10px);
+            }
+
+            .dark-mode-toggle {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+        }
+
+        .contact-section {
+            text-align: center;
+            padding: 50px;
+            font-family: Arial, sans-serif;
+        }
+
+        .contact-button {
+            background-color: #FF5733;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .contact-button:hover {
+            background-color: #C70039;
+        }
+
+        .contact-text {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .whatsapp-float:hover {
+            background-color: #128C7E;
+        }
+
+        .whatsapp-float i {
+            margin-top: 16px;
+        }
+
+        #no-results {
+            text-align: center;
+            font-style: italic;
+            color: var(--text-color);
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌓</button>
+
+    <div class="loading-screen">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <h1>VISHWA API DASHBOARD</h1>
+        
+        <div class="author-info">
+            <p>APIs (Application Programming Interfaces) are essential tools that enable software applications to communicate and exchange data seamlessly. They serve as intermediaries, allowing developers to integrate various services and data sources without needing to understand the underlying code. APIs power functionalities such as social media integrations and payment gateways, enhancing user experiences and streamlining development processes. To access these APIs, you need an API key. Get your API key by contacting the owner</p><br>
+        </div>
+
+        <div class="contact-section">
+            <p class="contact-text">Need help? Contact the owner directly for assistance and Get Free Api key!</p>
+            <a href="https://wa.me/94702481115" class="contact-button" target="_blank">Contact Owner</a>
+        </div>
+        <h2>Monitor Board</h2>
+        <div class="monitor-board" id="monitor-board"></div>
+        <div class="system-info" id="system-info">
+            <h3>🖥️ System Information</h3>
+            <ul>
+                <li><strong>🌐 Browser</strong> <span id="browser"></span></li>
+                <li><strong>💻 Operating System</strong> <span id="os"></span></li>
+                <li><strong>📏 Screen Resolution</strong> <span id="resolution"></span></li>
+                <li><strong>📱 Device Type</strong> <span id="device-type"></span></li>
+                <li><strong>🔋 Battery Status</strong> <span id="battery"></span></li>
+                <li><strong>🌍 Language</strong> <span id="language"></span></li>
+                <li><strong>⏰ Time Zone</strong> <span id="timezone"></span></li>
+                <li><strong>🧠 CPU Cores</strong> <span id="cpu-cores"></span></li>
+                <li><strong>💾 Memory</strong> <span id="memory"></span></li>
+                <li><strong>🔌 Online Status</strong> <span id="online-status"></span></li>
+                <li><strong>🎨 Color Depth</strong> <span id="color-depth"></span></li>
+                <li><strong>🖱️ Pointer Type</strong> <span id="pointer"></span></li>
+            </ul>
+
+        </div>
+        <br><br>
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search APIs...">
+            <button id="search-btn" class="search-btn">Search</button>
+        </div>
+        <br>
+        <div id="api-list"></div>
+
+        <div class="author-info">
+            <p>Created by: Vishwa Mihiranga</p>
+            <p>Last Updated: September 30, 2024</p>
+        </div>
+        </div>
+
+        <div id="alert" class="alert"></div>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+        <a href="https://api.whatsapp.com/send?phone=51955081075&text=Hola%21%20Quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20Varela%202." class="float" target="_blank">
+        <i class="fa fa-whatsapp my-float"></i>
+        </a>
+        <script>
+            const apiList = [
+                { name: 'nationality', path: '/misc/nationality?name=Vishwa&apikey=', id: 'nationality',description: 'Check Your nationality' },
+                { name: 'Genderize', path: '/misc/gender?name=Vishwa&apikey=', id: 'gender',description: 'Check Yout Genderize' },
+                { name: 'Qr Code Genarator', path: '/misc/generate-qrcode?text=Vishwa&apikey=', id: 'qr',description: 'Genarate Qr Code And Get Direact link' }, 
+                { name: 'Zip Code Info', path: '/misc/zipcode?zip=11100&apikey=', id: 'zipinfo',description: 'Get Zip Code Infomation' }, 
+                { name: 'Ip Adress Info', path: '/misc/iplookup?ip=104.18.35.46&apikey=', id: 'ipinfo',description: 'Get Ip Adress Infomation by ip' }, 
+                { name: 'Ip Adress Look', path: '/misc/dnslookup?domain=www.replit.com&apikey=', id: 'dnslook',description: 'Get Ip Adress from Domain' }, 
+                { name: 'PassWord Checker', path: '/misc/checkpass?password=hello&apikey=', id: 'passcheck',description: 'Check Your Password Strength' }, 
+                { name: 'baiscope.lk Movie Info', path: '/misc/baiscope-movie-details?url=https://www.baiscope.lk/deadpool-and-wolverine-2024-sinhala-subtitles/&apikey=', id: 'baiscopemovieresult',description: 'Get Baiscope.lk Movie Result with Sub DL ' }, 
+                { name: 'baiscope.lk Search', path: '/misc/baiscope-search?query=deadpool&apikey=', id: 'baiscopeserachresult',description: 'Get Baiscope.lk Search Result ' }, 
+                 { name: 'Sirasa News Info', path: '/misc/sirasa-article-details?url=https://sinhala.newsfirst.lk/2024/10/03/මී-උණ-රෝගය-පැතිරීමේ&apikey=', id: 'sirasaarticlenews',description: 'Get Sirasa News Info ' }, 
+                { name: 'Sirasa Latest News', path: '/misc/sirasa-latest-news?apikey=', id: 'sirasa1news',description: 'Get Sirasa Latest 1 News ' }, 
+                { name: 'Sirasa News List', path: '/misc/sirasa-latest-list-news?limit=20&multipage=true&apikey=', id: 'sirasalist',description: 'Get Sirasa Latest News list' }, 
+                { name: 'Sinhalasub.lk Movie Serach', path: '/misc/smovie-search?query=p&apikey=', id: 'sinahalkmvs',description: 'Get Movie Search Result From Sinhalasub.lk' }, 
+                { name: 'Sinhalasub.lk Movie Info', path: '/misc/smovie-details?url=https://sinhalasub.lk/movies/saripodhaa-sanivaaram-2024-sinhala-subtitles&apikey=', id: 'sinhalamvinfo',description: 'Get Movie Info From sinhalasub.lk' }, 
+                { name: 'pirate.lk Movie Info', path: 'misc/movie-details?url=https://pirate.lk/movies/i-saw-the-tv-glow-2024-sinhala-sub/&apikey=', id: 'piratelkmvinfo',description: 'Get Movie Info From Pirate.lk' }, 
+                { name: 'pirate.lk Movie Serach', path: '/misc/movie-search?query=P&apikey=', id: 'piratelkmvs',description: 'Get Movie Search Result From Pirate.lk' }, 
+                { name: 'Npm Package Info', path: '/misc/npm-package-info?packageName=axios&apikey=', id: 'npmpackagesinfo', description: 'Get Infomation about npm package ' },
+                { name: 'Npm Package Serach', path: '/misc/npm-search?query=express&limit=5&apikey=', id: 'npmpackagesearch', description: 'Get Serach Result from Npm site ' },
+                { name: 'Github Repo Info', path: '/misc/github-repo-info?owner=vishwamihiranga&repo=BHASHI-MD&apikey=', id: 'giturepoinfo', description: 'Get Infomation About Github repo ' },
+                { name: 'Github User Info', path: '/misc/github-user-info?username=vishwamihiranga&apikey=', id: 'gituserinfo', description: 'Get Infomation About Github User' },
+                { name: 'Github Repo Search', path: '/misc/github-search?query=BHASHI-MD&limit=10&sort=stars&order=desc&apikey=', id: 'gitreposearch', description: 'Get Search result of github' },
+                { name: 'Androidwadakarayo Latest News', path: '/misc/androidwadakarayo?limit=50&apikey=', id: 'androidwadakarayo', description: 'Get Latest Androidwadakaryao.com news' },
+                { name: 'Androidwaadakarayo News info', path: '/misc/article-info?url=https://androidwedakarayo.com/google-unveils-pixel-9-series-with-gemini-ai/&apikey=', id: 'androidwadakarayoinfo', description: 'Get Latest Androidwadakaryao.com news' },
+                { name: 'Ginisisila Search', path: '/misc/ginisisila?search=giripura&apikey=', id: 'ginisisilas', description: 'Search for Ginisisila Cartoons using a keyword.' },
+                { name: 'Ginisisila Cartoon Info', path: '/misc/ginisisila-video-info?url=https://ginisisilacartoon.net/watch.php?id=18189&apikey=', id: 'ginisisilainfo', description: 'Search for Ginisisila Cartoons using a URL' },
+                { name: 'Genius', path: '/misc/genius?query=monkey&apikey=', id: 'genius', description: 'Search artists' },
+                { name: 'Lyrics', path: '/misc/lyrics?url=https://genius.com/Lisa-money-lyrics&apikey=', id: 'lyrics', description: 'Search Lyrics' },
+                { name: 'Spotify Search', path: '/misc/spotify?q=lelena&apikey=', id: 'spotiserach', description: 'Search songs from Spotify' },
+                { name: 'Tiktok Search', path: '/misc/tiktoksearch?query=lelena&apikey=', id: 'ts', description: 'TikTok Search Using keywords' },
+                { name: 'Alert', path: '/misc/alert?text=hello&apikey=', id: 'alert', description: 'Generate an alert meme.' },
+                { name: 'Encode', path: '/misc/encode?text=hello&apikey=', id: 'encode', description: 'Encode your text to binary' },
+                { name: 'Decode', path: '/misc/decode?text=hello&apikey=', id: 'decode', description: 'Decode binary to text' },
+                { name: 'APK Finder', path: '/misc/apk?apkName=whatsapp&apikey=', id: 'apk', description: 'Download the latest WhatsApp APK.' },
+                { name: 'YTs Mx', path: '/misc/ytsmx?search=avatar&apikey=', id: 'yts', description: 'Search for yts.mx using a keyword.' },
+                { name: 'Steam Game Finder', path: '/misc/steam?search=dead&apikey=', id: 'steam', description: 'Search Game From Steam' },
+                { name: 'BING Search', path: '/misc/bing?query=blackpink&apikey=', id: 'bing', description: 'Search for results on Bing.' },
+                { name: 'Astronomy Picture of the Day (APOD)', path: '/misc/apod?apikey=', id: 'apod', description: 'Get NASA\'s Astronomy Picture of the Day.' },
+                { name: 'Random Cocktail', path: '/misc/cocktailrandom?apikey=', id: 'cocktail', description: 'Fetch information about a random cocktail.' },
+                { name: 'Location Info', path: '/misc/location/:ipAddress?apikey=', id: 'location', description: 'Get location information based on an IP address.' },
+                { name: 'Threads', path: '/misc/thread?url=https://www.threads.net/@momojypx/post/C52-OaTL3al&apikey=', id: 'threads', description: 'Fetch information about a Threads post.' },
+                { name: 'TikTok', path: '/misc/tiktok?username=https://vm.tiktok.com/ZMhNNeDHU/&apikey=', id: 'tiktok', description: 'Get details about a TikTok video.' },
+                { name: 'Sporty News', path: '/misc/sportynews?apikey=', id: 'sport', description: 'Fetch the latest sports news.' },
+                { name: 'Derana News', path: '/misc/derananews?apikey=', id: 'dera', description: 'Get news from Derana.' },
+                { name: 'iOS News', path: '/misc/iosnews?apikey=', id: 'iosnews', description: 'Fetch the latest iOS-related news.' },
+                { name: 'Esana News', path: '/misc/esana?apikey=', id: 'esana', description: 'Get news from Esana.' },
+                { name: 'Cric', path: '/misc/cric?apikey=', id: 'cric', description: 'Fetch cricket-related information.' },
+                { name: 'ISS', path: '/misc/iss?apikey=', id: 'iss', description: 'Get current information about the International Space Station.' },
+                { name: 'ChatGPT', path: '/misc/chatgpt?q=hello&apikey=', id: 'chatgpt', description: 'Interact with ChatGPT AI.' },
+                { name: 'Youtube', path: '/misc/youtube?q=lelena&apikey=', id: 'yt', description: 'Search for YouTube videos using a keyword.' },
+            ];
+
+            let apiStatuses = {};
+
+            function createApiCard(api) {
+                const status = apiStatuses[api.id] ? apiStatuses[api.id].status : 'Checking...';
+                const statusClass = status === 'Available' ? 'available' : (status === 'Unavailable' ? 'unavailable' : '');
+
+                return `
+                    <div class="api-card" id="${api.id}-card">
+                        <div class="api-header" onclick="toggleApiContent('${api.id}')">
+                            <span class="api-name">${api.name}</span>
+                            <span class="api-status ${statusClass}" id="${api.id}-status">${status}</span>
+                        </div>
+                        <div class="api-content" id="${api.id}-content">
+                            <div class="api-description">${api.description}</div>
+                            <div class="api-path">${api.path}</div>
+                            <button class="copy-btn" onclick="copyApiPath('${api.path}')">Copy Path</button>
+                            <div class="api-result" id="${api.id}-result"></div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            function getSystemInfo() {
+                const ua = navigator.userAgent;
+                const browserRegex = /(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i;
+                const [, browser, version] = ua.match(browserRegex) || [];
+
+                const osRegex = /(Mac OS X|Windows NT|Linux) ([0-9._]+)/;
+                const [, os, osVersion] = ua.match(osRegex) || [];
+
+                const resolution = `${window.screen.width}x${window.screen.height}`;
+
+                const deviceType = /Mobi|Android/i.test(ua) ? 'Mobile' : 'Desktop';
+
+                document.getElementById('browser').textContent = `${browser} ${version}`;
+                document.getElementById('os').textContent = `${os} ${osVersion}`;
+                document.getElementById('resolution').textContent = resolution;
+                document.getElementById('device-type').textContent = deviceType;
+
+                // Language
+                document.getElementById('language').textContent = navigator.language || 'N/A';
+
+                // Time Zone
+                document.getElementById('timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A';
+
+                // CPU Cores
+                document.getElementById('cpu-cores').textContent = navigator.hardwareConcurrency || 'N/A';
+
+                // Memory
+                if (navigator.deviceMemory) {
+                    document.getElementById('memory').textContent = `${navigator.deviceMemory} GB`;
+                } else {
+                    document.getElementById('memory').textContent = 'N/A';
+                }
+
+                // Online Status
+                updateOnlineStatus();
+                window.addEventListener('online', updateOnlineStatus);
+                window.addEventListener('offline', updateOnlineStatus);
+
+                // Color Depth
+                document.getElementById('color-depth').textContent = `${screen.colorDepth}-bit`;
+
+                // Pointer Type
+                updatePointerType();
+                window.addEventListener('pointerdown', updatePointerType);
+
+                // Battery Status
+                if ('getBattery' in navigator) {
+                    navigator.getBattery().then(battery => {
+                        updateBatteryStatus(battery);
+                        battery.addEventListener('chargingchange', () => updateBatteryStatus(battery));
+                        battery.addEventListener('levelchange', () => updateBatteryStatus(battery));
+                    });
+                } else {
+                    document.getElementById('battery').textContent = 'N/A';
+                }
+            }
+
+            function updateOnlineStatus() {
+                document.getElementById('online-status').textContent = navigator.onLine ? 'Online' : 'Offline';
+            }
+
+            function updatePointerType(event) {
+                const pointerType = event ? event.pointerType : 'unknown';
+                document.getElementById('pointer').textContent = pointerType.charAt(0).toUpperCase() + pointerType.slice(1);
+            }
+
+            function updateBatteryStatus(battery) {
+                const level = Math.round(battery.level * 100);
+                const charging = battery.charging ? 'Charging' : 'Not charging';
+                document.getElementById('battery').textContent = `${level}% (${charging})`;
+            }
+
+            function renderApiList(apis = apiList) {
+                const apiListElement = document.getElementById('api-list');
+                apiListElement.innerHTML = apis.map(createApiCard).join('');
+
+                // Reapply stored results
+                apis.forEach(api => {
+                    if (apiStatuses[api.id]) {
+                        const resultElement = document.getElementById(`${api.id}-result`);
+                        if (resultElement) {
+                            resultElement.textContent = apiStatuses[api.id].result || '';
+                        }
+                    }
+                });
+            }
+
+            function toggleApiContent(apiId) {
+                const content = document.getElementById(`${apiId}-content`);
+                content.style.display = content.style.display === 'none' ? 'block' : 'none';
+            }
+
+            function copyApiPath(path) {
+                navigator.clipboard.writeText(path)
+                    .then(() => showAlert('Copied to clipboard: ' + path))
+                    .catch(err => showAlert('Failed to copy: ' + err));
+            }
+
+            function showAlert(message) {
+                const alert = document.getElementById('alert');
+                alert.textContent = message;
+                alert.style.display = 'block';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 3000);
+            }
+
+            async function checkApiStatus(api) {
+                try {
+                    const startTime = performance.now();
+                    const response = await fetch(api.path + 'key1');
+                    const endTime = performance.now();
+                    const responseTime = endTime - startTime;
+
+                    const statusElement = document.getElementById(`${api.id}-status`);
+                    const resultElement = document.getElementById(`${api.id}-result`);
+
+                    if (response.ok) {
+                        const status = 'Available';
+                        statusElement.textContent = status;
+                        statusElement.classList.remove('unavailable');
+                        statusElement.classList.add('available');
+
+                        const data = await response.json();
+                        const result = JSON.stringify(data, null, 2);
+                        resultElement.textContent = result;
+
+                        apiStatuses[api.id] = { status, responseTime, result };
+                    } else {
+                        const status = 'Unavailable';
+                        statusElement.textContent = status;
+                        statusElement.classList.remove('available');
+                        statusElement.classList.add('unavailable');
+
+                        const result = 'Error: ' + response.status + ' ' + response.statusText;
+                        resultElement.textContent = result;
+
+                        apiStatuses[api.id] = { status, responseTime, result };
+                    }
+
+                    updateMonitorBoard();
+                } catch (error) {
+                    const status = 'Error';
+                    const statusElement = document.getElementById(`${api.id}-status`);
+                    statusElement.textContent = status;
+                    statusElement.classList.remove('available');
+                    statusElement.classList.add('unavailable');
+
+                    const result = 'Error: ' + error.message;
+                    const resultElement = document.getElementById(`${api.id}-result`);
+                    resultElement.textContent = result;
+
+                    apiStatuses[api.id] = { status, responseTime: 0, result };
+
+                    updateMonitorBoard();
+                }
+            }
+
+            function updateMonitorBoard() {
+                const monitorBoard = document.getElementById('monitor-board');
+                monitorBoard.innerHTML = '';
+
+                const totalApis = Object.keys(apiStatuses).length;
+                const availableApis = Object.values(apiStatuses).filter(status => status.status === 'Available').length;
+                const unavailableApis = Object.values(apiStatuses).filter(status => status.status === 'Unavailable').length;
+                const errorApis = Object.values(apiStatuses).filter(status => status.status === 'Error').length;
+                const totalResponseTime = Object.values(apiStatuses).reduce((sum, status) => sum + status.responseTime, 0);
+                const avgResponseTime = totalApis > 0 ? Math.round(totalResponseTime / totalApis) : 0;
+
+                const monitorItems = [
+                    { label: 'Total APIs', value: totalApis, icon: '🔢' },
+                    { label: 'Available APIs', value: availableApis, icon: '✅' },
+                    { label: 'Unavailable APIs', value: unavailableApis, icon: '❌' },
+                    { label: 'Error APIs', value: errorApis, icon: '⚠️' },
+                    { label: 'Avg. Response Time', value: `${avgResponseTime} ms`, icon: '⏱️' },
+                ];
+
+                monitorItems.forEach(item => {
+                    const monitorItem = document.createElement('div');
+                    monitorItem.className = 'monitor-item';
+                    monitorItem.style.animation = 'pulse 2s infinite';
+                    monitorItem.innerHTML = `
+                        <div class="monitor-icon">${item.icon}</div>
+                        <div class="monitor-label">${item.label}</div>
+                        <div class="monitor-value">${item.value}</div>
+                    `;
+                    monitorBoard.appendChild(monitorItem);
+                });
+            }
+
+            function hideLoadingScreen() {
+                const loadingScreen = document.querySelector('.loading-screen');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }
+
+            function searchApis() {
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const filteredApis = apiList.filter(api => 
+                    api.name.toLowerCase().includes(searchTerm) || 
+                    api.description.toLowerCase().includes(searchTerm)
+                );
+                renderApiList(filteredApis);
+            }
+
+            function toggleDarkMode() {
+                document.body.classList.toggle('dark-mode');
+            }
+
+            async function initializeApp() {
+                renderApiList();
+                setTimeout(hideLoadingScreen, 1000); // Hide loading screen after 1 second
+
+                for (const api of apiList) {
+                    await checkApiStatus(api);
+                }
+
+                document.getElementById('search-btn').addEventListener('click', searchApis);
+                document.getElementById('search-input').addEventListener('keyup', (event) => {
+                    if (event.key === 'Enter') {
+                        searchApis();
+                            }
+                        });
+
+                        getSystemInfo(); 
+                        getSystemInfo();
+                        renderUsageChart();
+                        updateApiHealthStatus();
+                        updateRateLimiting();
+                    }
+
+
+            window.onload = initializeApp;
+        </script>
+        </body>
+        </html>

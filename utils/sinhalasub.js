@@ -129,8 +129,40 @@ const sscrapeMovieInfo = async (url) => {
   }
 };
 
+const scrapeDownloadLink = async (url) => {
+  try {
+    const response = await axios.get(url);
+    const $ = cheerio.load(response.data);
+
+    // Extract the download link
+    const fullDownloadLink = $('#link').attr('href');
+
+    // Extract the file ID from the full download link
+    const fileId = fullDownloadLink.split('/').pop();
+
+    // Construct the pixeldrain API URL
+    const pixeldrainApiUrl = `https://pixeldrain.com/api/file/${fileId}`;
+
+    return {
+      status: 'success',
+      author: 'Vishwa Mihiranga',
+      data: {
+        downloadLink: pixeldrainApiUrl,
+        fullUrl: url,
+      },
+    };
+  } catch (error) {
+    return {
+      status: 'error',
+      author: 'Vishwa Mihiranga',
+      message: error.response?.data?.reason || error.message || 'Error occurred while scraping the download link.',
+    };
+  }
+};
+
 
 module.exports = {
   sscrapeSearchResults,
   sscrapeMovieInfo,
+  scrapeDownloadLink,
 };

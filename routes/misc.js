@@ -267,34 +267,6 @@ router.get('/zipcode', checkApiKey, async (req, res) => {
   }
 });
 //===================================================
-const { PixaldrainDL,isValidURL } = require('../utils/sinhalasubdl');
-router.get('/sinhalasubp', checkApiKey, async (req, res) => {
-      const { link } = req.query;
-
-      // Validate the input parameter
-      if (!link || !isValidURL(link)) {
-          return res.status(400).json({ status: 'error', message: 'Valid link parameter is required' });
-      }
-
-      try {
-          // Fetch all links using the PixaldrainDL function
-          const allLinks = await PixaldrainDL(link, 'alllinks');
-
-          // Check if any links were found
-          if (Object.keys(allLinks).length === 0) {
-              return res.status(404).json({ status: 'error', message: 'No download links found' });
-          }
-
-          return res.json({
-              status: 'success',
-              author: 'Vishwa Mihiranga',
-              allLinks,
-          });
-      } catch (error) {
-          console.error('Error fetching download links:', error);
-          return res.status(500).json({ status: 'error', message: 'An error occurred while fetching download links.' });
-      }
-  });
 
 //=====================================================
 const fetchIPInfo = require('../utils/ipinfo');

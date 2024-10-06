@@ -174,6 +174,57 @@ router.get('/generate-qrcode', async (req, res) => {
   }
 });
 //=======================================================
+const { scrapeCineSubzMovieInfo } = require('../utils/cineScrape'); // Import the scraper function
+
+// API route for scraping movie information from CineSubz
+router.get('/scrape-cinesubz', async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ status: 'error', message: 'URL parameter is required' });
+  }
+
+  try {
+    const result = await scrapeCineSubzMovieInfo(url);
+    return res.json({
+      status: 'success',
+      author: 'Vishwa Mihiranga',
+      data: result.data,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+router.get('/cinesearch', async (req, res) => {
+  const { q } = req.query;
+  const apiKey = '6467ad0b29';
+  const baseUrl = 'https://prabath-md-api.up.railway.app/api/cinesearch';
+
+  if (!q) {
+    return res.status(400).json({ status: 'error', message: 'Query parameter "q" is required' });
+  }
+
+  try {
+    // Make request to the external API
+    const apiResponse = await axios.get(`${baseUrl}?q=${q}&apikey=${apiKey}`);
+    const { data } = apiResponse;
+
+    // Remove the "Created_by" field from the response
+    if (data && data.Created_by) {
+      delete data.Created_by;
+    }
+
+    // Send the modified response back
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+//=======================================================
 const generateCanvasImage = require('../utils/attp');
 router.get('/attp', async (req, res) => {
   const { text, color } = req.query;
@@ -193,6 +244,8 @@ router.get('/attp', async (req, res) => {
     return res.status(500).json({ status: 'error', message: error.message });
   }
 });
+//======================================================
+
 //=====================================================
 const fetchZipcodeInfo = require('../utils/zipcode');
 router.get('/zipcode', checkApiKey, async (req, res) => {
@@ -213,6 +266,36 @@ router.get('/zipcode', checkApiKey, async (req, res) => {
     return res.status(500).json({ status: 'error', message: error.message });
   }
 });
+//===================================================
+const { PixaldrainDL,isValidURL } = require('../utils/sinhalasubdl');
+router.get('/sinhalasubp', checkApiKey, async (req, res) => {
+      const { link } = req.query;
+
+      // Validate the input parameter
+      if (!link || !isValidURL(link)) {
+          return res.status(400).json({ status: 'error', message: 'Valid link parameter is required' });
+      }
+
+      try {
+          // Fetch all links using the PixaldrainDL function
+          const allLinks = await PixaldrainDL(link, 'alllinks');
+
+          // Check if any links were found
+          if (Object.keys(allLinks).length === 0) {
+              return res.status(404).json({ status: 'error', message: 'No download links found' });
+          }
+
+          return res.json({
+              status: 'success',
+              author: 'Vishwa Mihiranga',
+              allLinks,
+          });
+      } catch (error) {
+          console.error('Error fetching download links:', error);
+          return res.status(500).json({ status: 'error', message: 'An error occurred while fetching download links.' });
+      }
+  });
+
 //=====================================================
 const fetchIPInfo = require('../utils/ipinfo');
 router.get('/iplookup', checkApiKey, async (req, res) => {
@@ -428,8 +511,21 @@ router.get('/article-info', async (req, res) => {
 });
 //=======================================================
 
-const { sscrapeSearchResults, sscrapeMovieInfo } = require('../utils/sinhalasub');
+const { sscrapeSearchResults, sscrapeMovieInfo,scrapeDownloadLink } = require('../utils/sinhalasub');
 
+router.get('/sdownload-link', async (req, res) => {
+  const { url } = req.query;
+  if (!url) {
+    return res.status(400).json({ status: 'error', message: 'URL query parameter is required' });
+  }
+  try {
+    const downloadLinkInfo = await scrapeDownloadLink(url);
+    return res.json(downloadLinkInfo);
+  } catch (error) {
+    console.error('Error in /sdownload-link route:', error);
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
 // Route for movie search
 router.get('/smovie-search', async (req, res) => {
   const { query } = req.query;

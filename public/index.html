@@ -585,6 +585,8 @@
         </a>
         <script>
             const apiList = [
+                { name: 'Cinesubz.co Movie Info', path: '/misc/scrape-cinesubz?url=https://cinesubz.co/movies/the-plot-2024-sinhala-subtitles/&apikey=', id: 'cines',description: 'Get Search Result from Cinesub' },
+                { name: 'Cinesubz.co Search', path: '/misc/cinesearch?q=h&apikey=', id: 'cinemv',description: 'Get Movie Infomations From Cinesubz.co' },
                 { name: 'nationality', path: '/misc/nationality?name=Vishwa&apikey=', id: 'nationality',description: 'Check Your nationality' },
                 { name: 'Genderize', path: '/misc/gender?name=Vishwa&apikey=', id: 'gender',description: 'Check Yout Genderize' },
                 { name: 'Qr Code Genarator', path: '/misc/generate-qrcode?text=Vishwa&apikey=', id: 'qr',description: 'Genarate Qr Code And Get Direact link' }, 
@@ -598,6 +600,7 @@
                 { name: 'Sirasa Latest News', path: '/misc/sirasa-latest-news?apikey=', id: 'sirasa1news',description: 'Get Sirasa Latest 1 News ' }, 
                 { name: 'Sirasa News List', path: '/misc/sirasa-latest-list-news?limit=20&multipage=true&apikey=', id: 'sirasalist',description: 'Get Sirasa Latest News list' }, 
                 { name: 'Sinhalasub.lk Movie Serach', path: '/misc/smovie-search?query=p&apikey=', id: 'sinahalkmvs',description: 'Get Movie Search Result From Sinhalasub.lk' }, 
+                { name: 'Sinhalasub.lk Pixeldrain', path: '/misc/sdownload-link?url=https://sinhalasub.lk/links/vntqiuuye5/&apikey=', id: 'sinhalamvinfopixeldrain',description: 'PixelDrain Link Ge from Sinhalasub.lk' }, 
                 { name: 'Sinhalasub.lk Movie Info', path: '/misc/smovie-details?url=https://sinhalasub.lk/movies/saripodhaa-sanivaaram-2024-sinhala-subtitles&apikey=', id: 'sinhalamvinfo',description: 'Get Movie Info From sinhalasub.lk' }, 
                 { name: 'pirate.lk Movie Info', path: 'misc/movie-details?url=https://pirate.lk/movies/i-saw-the-tv-glow-2024-sinhala-sub/&apikey=', id: 'piratelkmvinfo',description: 'Get Movie Info From Pirate.lk' }, 
                 { name: 'pirate.lk Movie Serach', path: '/misc/movie-search?query=P&apikey=', id: 'piratelkmvs',description: 'Get Movie Search Result From Pirate.lk' }, 

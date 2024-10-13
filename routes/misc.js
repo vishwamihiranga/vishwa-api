@@ -152,7 +152,67 @@ router.get('/encode', checkApiKey, async (req, res) => {
   }
 });
 //=======================================================
+const { scrapeTheHackerNewsList,scrapeTheHackerNewsArticle,scrapeWABetaInfoList,scrapeWABetaInfoArticle } = require('../utils/thehackernews');
+router.get('/the-hacker-news-list', async (req, res) => {
+  try {
+    const articles = await scrapeTheHackerNewsList();
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: articles,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
 
+// Route to get a specific article
+router.get('/the-hacker-news-info', async (req, res) => {
+  const { url } = req.query;
+  if (!url) {
+    return res.status(400).json({ status: 'error', message: 'URL parameter is required' });
+  }
+  try {
+    const article = await scrapeTheHackerNewsArticle(url);
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: article,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+router.get('/wabetainfo-list', async (req, res) => {
+  try {
+    const articles = await scrapeWABetaInfoList();
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: articles,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
+router.get('/wabetainfo-article', async (req, res) => {
+  try {
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({ status: 'error', message: 'URL parameter is required' });
+    }
+    const article = await scrapeWABetaInfoArticle(url);
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: article,
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+//===================================================
 const generateAndUploadQRCode = require('../utils/qr'); // Import the QR code generator function
 
 router.get('/generate-qrcode', async (req, res) => {

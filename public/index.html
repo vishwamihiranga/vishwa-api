@@ -5,25 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VISHWA API DASHBOARD</title>
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
         :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #f5f5f5;
+            --primary-color: #AD49E1;
+            --secondary-color: #EBD3F8;
             --background-color: #ffffff;
-            --text-color: #333333;
-            --accent-color: #ff6b6b;
+            --text-color: #2E073F;
+            --accent-color: #7A1CAC;
             --success-color: #00C851;
             --error-color: #ff4444;
         }
 
         .dark-mode {
-            --primary-color: rgb(255, 223, 0);
-            --secondary-color: rgb(44, 44, 44);
-            --background-color: rgb(26, 26, 26);
-            --text-color: #FFFFFF;
-            --accent-color: rgb(255, 140, 140);
+            --primary-color: #AD49E1;
+            --secondary-color: #7A1CAC;
+            --background-color: #2E073F;
+            --text-color: #EBD3F8;
+            --accent-color: #EBD3F8;
         }
 
         * {
@@ -50,10 +51,14 @@
             padding: 20px;
             background-color: var(--secondary-color);
             border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             position: relative;
             z-index: 1;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
         }
 
         h1, h2 {
@@ -61,7 +66,8 @@
             color: var(--primary-color);
             margin-bottom: 30px;
             font-size: 2.5em;
-            animation: fadeIn 1s ease;
+            animation: fadeInDown 1s ease;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         h2 {
@@ -74,6 +80,7 @@
             margin-bottom: 30px;
             font-style: italic;
             color: var(--text-color);
+            animation: fadeIn 1.5s ease;
         }
 
         .api-card {
@@ -83,7 +90,12 @@
             margin-bottom: 20px;
             overflow: hidden;
             transition: all 0.3s ease;
-            animation: slideIn 0.5s ease;
+            animation: slideInUp 0.5s ease;
+        }
+
+        .api-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
         .api-header {
@@ -92,18 +104,23 @@
             align-items: center;
             padding: 15px 20px;
             background-color: var(--primary-color);
-            color: #323232;
+            color: var(--background-color);
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
         .api-header:hover {
-            background-color: rgb(255, 200, 0);
+            background-color: var(--accent-color);
         }
 
         .api-name {
             font-weight: bold;
             font-size: 1.1em;
+            transition: transform 0.3s;
+        }
+
+        .api-header:hover .api-name {
+            transform: translateX(5px);
         }
 
         .api-status {
@@ -112,6 +129,11 @@
             border-radius: 20px;
             background-color: var(--secondary-color);
             color: var(--text-color);
+            transition: transform 0.3s;
+        }
+
+        .api-header:hover .api-status {
+            transform: translateX(-5px);
         }
 
         .api-status.unavailable {
@@ -127,6 +149,7 @@
         .api-content {
             padding: 20px;
             display: none;
+            animation: fadeIn 0.5s ease;
         }
 
         .api-path {
@@ -136,11 +159,18 @@
             border-radius: 4px;
             margin-bottom: 10px;
             word-break: break-all;
+            transition: background-color 0.3s;
+        }
+
+        .api-path:hover {
+            background-color: var(--accent-color);
+            color: var(--background-color);
         }
 
         .api-description {
             margin-bottom: 15px;
             font-style: italic;
+            animation: fadeIn 1s ease;
         }
 
         .api-result {
@@ -154,21 +184,28 @@
             font-family: monospace;
             white-space: pre-wrap;
             word-break: break-all;
+            transition: background-color 0.3s;
+        }
+
+        .api-result:hover {
+            background-color: var(--accent-color);
+            color: var(--background-color);
         }
 
         .copy-btn {
             background-color: var(--primary-color);
-            color: var(--text-color);
+            color: var(--background-color);
             border: none;
             padding: 10px 15px;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
         }
 
         .copy-btn:hover {
-            background-color: rgb(255, 200, 0);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            background-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(173, 73, 225, 0.5);
+            transform: scale(1.05);
         }
 
         .alert {
@@ -180,7 +217,7 @@
             padding: 10px 20px;
             border-radius: 4px;
             display: none;
-            animation: slideIn 0.3s ease;
+            animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
             z-index: 1000;
         }
 
@@ -188,7 +225,9 @@
             text-align: center;
             margin-top: 30px;
             font-style: italic;
-            color: rgb(136, 136, 136);
+            color: var(--text-color);
+            opacity: 0.7;
+            animation: fadeIn 2s ease;
         }
 
         .monitor-board {
@@ -200,6 +239,7 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
+            animation: fadeIn 1.5s ease;
         }
 
         .monitor-item {
@@ -211,6 +251,7 @@
             background-color: var(--secondary-color);
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 0.5s ease;
         }
 
         .monitor-item:hover {
@@ -221,6 +262,12 @@
         .monitor-icon {
             font-size: 2em;
             margin-bottom: 10px;
+            color: var(--primary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .monitor-item:hover .monitor-icon {
+            transform: scale(1.1);
         }
 
         .monitor-label {
@@ -231,6 +278,11 @@
         .monitor-value {
             color: var(--primary-color);
             font-size: 1.2em;
+            transition: color 0.3s ease;
+        }
+
+        .monitor-item:hover .monitor-value {
+            color: var(--accent-color);
         }
 
         @keyframes fadeIn {
@@ -238,15 +290,53 @@
             to { opacity: 1; }
         }
 
-        @keyframes slideIn {
+        @keyframes fadeInDown {
             from {
+                opacity: 0;
                 transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(20px);
                 opacity: 0;
             }
             to {
                 transform: translateY(0);
                 opacity: 1;
             }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
 
         .loading-screen {
@@ -281,23 +371,38 @@
             display: flex;
             justify-content: center;
             margin-bottom: 20px;
+            animation: fadeIn 1s ease;
         }
 
         .search-input {
             width: 70%;
             padding: 10px;
             font-size: 16px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--secondary-color);
             border-radius: 4px 0 0 4px;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
         }
 
         .search-btn {
             padding: 10px 20px;
             background-color: var(--primary-color);
-            color: var(--text-color);
+            color: var(--background-color);
             border: none;
             border-radius: 0 4px 4px 0;
             cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
         }
 
         .dark-mode-toggle {
@@ -305,7 +410,7 @@
             top: 20px;
             left: 20px;
             background-color: var(--primary-color);
-            color: var(--text-color);
+            color: var(--background-color);
             border: none;
             padding: 10px 15px;
             border-radius: 50%;
@@ -321,7 +426,7 @@
         }
 
         .dark-mode-toggle:hover {
-            background-color: rgb(255, 200, 0);
+            background-color: var(--accent-color);
             transform: scale(1.1);
         }
 
@@ -331,38 +436,57 @@
             margin: 20px auto;
             padding: 10px 20px;
             background-color: var(--primary-color);
-            color: var(--text-color);
+            color: var(--background-color);
             text-align: center;
             text-decoration: none;
             border-radius: 4px;
             font-weight: bold;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            animation: pulse 2s infinite;
         }
 
         .get-api-key-btn:hover {
-            background-color: rgb(255, 200, 0);
+            background-color: var(--accent-color);
             transform: scale(1.05);
+            animation: none;
         }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
         .system-info {
-            background-color: #f0f0f0;
+            background-color: var(--secondary-color);
             border-radius: 12px;
             padding: 20px;
             margin-top: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
+            animation: fadeIn 1.5s ease;
         }
+
         .system-info:hover {
             transform: translateY(-5px);
             box-shadow: 0 6px 8px rgba(0,0,0,0.15);
         }
+
         .system-info h3 {
             margin-top: 0;
-            color: #333;
+            color: var(--primary-color);
             font-size: 1.5em;
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid var(--accent-color);
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
+
         .system-info ul {
             list-style-type: none;
             padding: 0;
@@ -370,45 +494,98 @@
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
+
         .system-info li {
-            background-color: rgba(255,255,255,0.7);
+            background-color: rgba(255,255,255,0.1);
             padding: 10px;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
+
         .system-info li:hover {
-            background-color: rgba(255,255,255,0.9);
+            background-color: rgba(255,255,255,0.2);
+            transform: scale(1.05);
         }
+
         .system-info strong {
             font-weight: bold;
             margin-right: 5px;
             display: block;
             font-size: 0.9em;
-            color: #666;
+            color: var(--accent-color);
         }
+
         .system-info span {
             font-size: 1.1em;
-            color: #333;
+            color: var(--text-color);
         }
-        .dark-mode .system-info {
-            background-color: #2a2a2a;
-            color: #fff;
+
+        .contact-section {
+            text-align: center;
+            padding: 50px;
+            font-family: Arial, sans-serif;
+            animation: fadeIn 1.5s ease;
         }
-        .dark-mode .system-info h3 {
-            color: #fff;
-            border-bottom-color: #444;
+
+        .contact-button {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            padding: 15px 30px;
+            font-size: 18px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
         }
-        .dark-mode .system-info li {
-            background-color: rgba(0,0,0,0.3);
+
+        .contact-button:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.05);
         }
-        .dark-mode .system-info li:hover {
-            background-color: rgba(0,0,0,0.5);
+
+        .contact-text {
+            margin-bottom: 20px;
+            font-size: 20px;
+            color: var(--text-color);
         }
-        .dark-mode .system-info strong {
-            color: #aaa;
+
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 40px;
+            right: 40px;
+            background-color: #25d366;
+            color: #FFF;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.3s;
         }
-        .dark-mode .system-info span {
-            color: #fff;
+
+        .whatsapp-float:hover {
+            background-color: #128C7E;
+            transform: scale(1.1);
+        }
+
+        .whatsapp-float i {
+            margin-top: 16px;
+        }
+
+        #no-results {
+            text-align: center;
+            font-style: italic;
+            color: var(--text-color);
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 1s ease;
         }
 
         @media (max-width: 768px) {
@@ -460,69 +637,6 @@
                 height: 40px;
                 font-size: 16px;
             }
-        }
-
-        .contact-section {
-            text-align: center;
-            padding: 50px;
-            font-family: Arial, sans-serif;
-        }
-
-        .contact-button {
-            background-color: #FF5733;
-            color: white;
-            padding: 15px 30px;
-            font-size: 18px;
-            text-decoration: none;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .contact-button:hover {
-            background-color: #C70039;
-        }
-
-        .contact-text {
-            margin-bottom: 20px;
-            font-size: 20px;
-        }
-
-        .whatsapp-float {
-            position: fixed;
-            width: 60px;
-            height: 60px;
-            bottom: 40px;
-            right: 40px;
-            background-color: #25d366;
-            color: #FFF;
-            border-radius: 50px;
-            text-align: center;
-            font-size: 30px;
-            box-shadow: 2px 2px 3px #999;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            transition: background-color 0.3s;
-        }
-
-        .whatsapp-float:hover {
-            background-color: #128C7E;
-        }
-
-        .whatsapp-float i {
-            margin-top: 16px;
-        }
-
-        #no-results {
-            text-align: center;
-            font-style: italic;
-            color: var(--text-color);
-            margin-top: 20px;
-            display: none;
         }
     </style>
 </head>
@@ -585,6 +699,17 @@
         </a>
         <script>
             const apiList = [
+                {name: 'filecr.com Search',path: '/misc/filecr-search?q=photoshop&page=3&apikey=',id: 'filecrsearch',description: 'Filecr.com Serach Result',},
+                {name: 'PcGuide Tech News List',path: '/misc/pc-guide-news-info?url=https://www.pcguide.lk/snapdragon-chipset-phones-are-in-danger/&apikey=',id: 'pcguidetechnews',description: 'PcGuide.lk Tech News List With Page Selector',},
+                {name: 'pastpapers.wiki Downloader',path: '/misc/pastpapers-download?url=https://pastpapers.wiki/2021-grade-01-sinhala-1st-term-test-paper-jesan-education-center/&apikey=',id: 'pastwikidl',description: 'pastpapers.wiki Downloader',},
+                {name: 'pastpapers.wiki Search',path: '/misc/pastpapers-search?q=Grade%2006%201st%20term%202021&apikey=',id: 'pastwikisearch',description: 'pastpapers.wiki Search Result',},
+                 {name: 'Google Image Search',path: '/misc/google-image-search?q=hello&apikey=',id: 'gimg',description: 'Google Image Serach Direact LInk Response',},
+                {name: 'llama Ai',path: '/misc/llama-ai?prompt=hello&apikey=',id: 'llama',description: 'Llama AI Response',},
+                {name: 'ImgGen Ai',path: '/misc/dream-ai?prompt=hello&apikey=',id: 'dreamai',description: 'Img Gen Response',},
+                {name: 'Mistral Ai',path: '/misc/mistral-ai?text=hello&apikey=',id: 'mistralai',description: 'Mistral Ai Response',},
+                  {name: 'GMS Search',path: '/misc/gms-search?q=Iphone%2013%20Pro&apikey=',id: 'gmssearch',description: 'Search for devices by query',},
+                  {name: 'GMS Top Devices',path: '/misc/gms-top?apikey=',id: 'gmstop',description: 'Get top devices based on interest',},
+                  {name: 'GMS Deals',path: '/misc/gms-deals?apikey=',id: 'gmsdeals',description: 'Get current deals on devices', },
                 { name: 'WaBetaInfo News Info', path: '/misc/wabetainfo-article?url=https://wabetainfo.com/whatsapp-beta-for-android-2-24-21-35-whats-new/&apikey=', id: 'wabetainfoinfo',description: 'Get wabetainfo.com News Info' },
                 { name: 'WaBetaInfo List', path: '/misc/wabetainfo-list?apikey=', id: 'wabetainfolist',description: 'Get wabetainfo.com News List' },
                 { name: 'thehackernews.com News Info', path: '/misc/the-hacker-news-info?url=https://thehackernews.com/2024/10/fbi-creates-fake-cryptocurrency-to.html&apikey=', id: 'thehackernewsinfo',description: 'Get thehackernews.com news Info' },
@@ -619,7 +744,13 @@
                 { name: 'Ginisisila Cartoon Info', path: '/misc/ginisisila-video-info?url=https://ginisisilacartoon.net/watch.php?id=18189&apikey=', id: 'ginisisilainfo', description: 'Search for Ginisisila Cartoons using a URL' },
                 { name: 'Genius', path: '/misc/genius?query=monkey&apikey=', id: 'genius', description: 'Search artists' },
                 { name: 'Lyrics', path: '/misc/lyrics?url=https://genius.com/Lisa-money-lyrics&apikey=', id: 'lyrics', description: 'Search Lyrics' },
-                { name: 'Spotify Search', path: '/misc/spotify?q=lelena&apikey=', id: 'spotiserach', description: 'Search songs from Spotify' },
+                { name: 'Spotify Search ', path: '/misc/spotify?q=lelena&apikey=', id: 'spotiserach', description: 'Search songs from Spotify' },
+                { name: 'Spotify Download', path: '/misc/spotify-download?url=https://open.spotify.com/track/37ZtpRBkHcaq6hHy0X98zn&apikey=', id: 'spotifydl', description: 'Download Spotify Download' },
+                { name: 'Instagram Download', path: '/misc/instagram-download?url=https://www.instagram.com/p/C6goPSpyytx/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==&apikey=', id: 'instadl', description: 'Download Instagram Reel / Image' },
+                { name: 'Youtube Mp3 Download', path: '/misc/youtube-mp3?url=https://www.youtube.com/watch?v=PynumRnErVM&apikey=', id: 'ytmp3dl', description: 'Youtube Audio Mp3 Downloader' },
+                { name: 'Youtube Mp4 Download', path: '/misc/youtube-mp4?url=https://www.youtube.com/watch?v=PynumRnErVM&apikey=', id: 'ytmp4dl', description: 'Youtube Video Mp4 Downloader' },
+                { name: 'SoundCloud Download', path: '/misc/soundcloud?url=https://m.soundcloud.com/trap-mvp-rd/milo-j-rincon&apikey=', id: 'soundclouddl', description: 'SoundCloud Song Downloader' },
+                { name: 'Twitter Download', path: '/misc/twitter?url=https://twitter.com/i/status/1578737162757242881&apikey=', id: 'twitterdl', description: 'twiiter Downloader' },
                 { name: 'Tiktok Search', path: '/misc/tiktoksearch?query=lelena&apikey=', id: 'ts', description: 'TikTok Search Using keywords' },
                 { name: 'Alert', path: '/misc/alert?text=hello&apikey=', id: 'alert', description: 'Generate an alert meme.' },
                 { name: 'Encode', path: '/misc/encode?text=hello&apikey=', id: 'encode', description: 'Encode your text to binary' },
@@ -643,6 +774,20 @@
                 { name: 'Youtube', path: '/misc/youtube?q=lelena&apikey=', id: 'yt', description: 'Search for YouTube videos using a keyword.' },
             ];
 
+            function renderApiList(apis = apiList) {
+                const apiListElement = document.getElementById('api-list');
+                apiListElement.innerHTML = apis.map(createApiCard).join('');
+
+                // Reapply stored results
+                apis.forEach(api => {
+                    if (apiStatuses[api.id]) {
+                        const resultElement = document.getElementById(`${api.id}-result`);
+                        if (resultElement) {
+                            resultElement.textContent = apiStatuses[api.id].result || '';
+                        }
+                    }
+                });
+            }
             let apiStatuses = {};
 
             function createApiCard(api) {
@@ -737,20 +882,6 @@
                 document.getElementById('battery').textContent = `${level}% (${charging})`;
             }
 
-            function renderApiList(apis = apiList) {
-                const apiListElement = document.getElementById('api-list');
-                apiListElement.innerHTML = apis.map(createApiCard).join('');
-
-                // Reapply stored results
-                apis.forEach(api => {
-                    if (apiStatuses[api.id]) {
-                        const resultElement = document.getElementById(`${api.id}-result`);
-                        if (resultElement) {
-                            resultElement.textContent = apiStatuses[api.id].result || '';
-                        }
-                    }
-                });
-            }
 
             function toggleApiContent(apiId) {
                 const content = document.getElementById(`${apiId}-content`);

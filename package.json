@@ -6,19 +6,20 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@sl-code-lords/esana-news": "1.1.0",
+    "@sl-code-lords/si-subdl": "1.1.1",
     "api-dylux": "^1.8.5",
-    "zxcvbn": "^4.4.2",
-    "qrcode": "^1.5.1",
-    "axios": "^1.4.0",
-    "hirunews-scrap": "^1.1.2",
-    "cheerio": "^1.0.0-rc.10",
-    "express": "^4.18.2",
-    "@sl-code-lords/si-subdl":"1.1.1",
-    "express": "latest",
-    "@sl-code-lords/esana-news":"1.1.0",
-    "ios-news":"1.0.1",
     "aptoide-scraper": "^1.0.1",
+    "arenaev-vehicles-news": "1.0.0",
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.10",
+    "express": "^4.21.1",
+    "gsmarena-api": "2.0.5",
+    "hirunews-scrap": "^1.1.2",
+    "ios-news": "1.0.1",
     "moment": "2.30.1",
-    "qrcode": "^1.5.4"
+    "nima-google-now": "1.0.1",
+    "qrcode": "^1.5.4",
+    "zxcvbn": "^4.4.2"
   }
 }

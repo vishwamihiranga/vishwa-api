@@ -16,7 +16,117 @@ const yts = require('yt-search');
 const ytdl = require('ytdl-core');
 
 const router = express.Router();
+//=====================================================
+const { scrapeFileCR } = require('../utils/filecr-scraper');
 
+router.get('/filecr-search', async (req, res) => {
+  try {
+    const query = req.query.q;
+    const page = parseInt(req.query.page) || 1;
+
+    if (!query) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Search query is required.',
+      });
+    }
+
+    const searchResults = await scrapeFileCR(query, page);
+
+    if (searchResults.status === 'error') {
+      return res.status(500).json(searchResults);
+    }
+
+    return res.json(searchResults);
+  } catch (error) {
+    console.error('API error:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'An unexpected error occurred.',
+      details: error.message
+    });
+  }
+});
+//============================================================
+const { scrapePCGuide } = require('../utils/pcguide-scraper');
+
+router.get('/pcguide-news', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const scrapedData = await scrapePCGuide(page);
+
+    if (scrapedData.status === 'error') {
+      return res.status(500).json(scrapedData);
+    }
+
+    return res.json(scrapedData);
+  } catch (error) {
+    console.error('API error:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'An unexpected error occurred.',
+      details: error.message
+    });
+  }
+});
+
+//==========================================================================
+const { scrapePastPapersWiki } = require('../utils/pastwiki'); // Adjust the path as needed
+
+router.get('/pastpapers-search', async (req, res) => {
+  try {
+    const query = req.query.q;
+    if (!query) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Search query is required.',
+      });
+    }
+
+    const searchResults = await scrapePastPapersWiki(query);
+
+    if (searchResults.status === 'error') {
+      return res.status(500).json(searchResults);
+    }
+
+    return res.json(searchResults);
+  } catch (error) {
+    console.error('API error:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'An unexpected error occurred.',
+      details: error.message
+    });
+  }
+});
+const { scrapePastPapersWikiDL } = require('../utils/pastwikidl'); // Adjust the path as needed
+
+router.get('/pastpapers-download', async (req, res) => {
+  try {
+    const url = req.query.url;
+    if (!url) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Download page URL is required.',
+      });
+    }
+
+    const textbookInfo = await scrapePastPapersWikiDL(url);
+
+    if (textbookInfo.status === 'error') {
+      return res.status(500).json(textbookInfo);
+    }
+
+    return res.json(textbookInfo);
+  } catch (error) {
+    console.error('API error:', error);
+    return res.status(500).json({
+      status: 'error',
+      message: 'An unexpected error occurred.',
+      details: error.message
+    });
+  }
+});
 //==========================================================================
 router.get('/alert', checkApiKey, async (req, res) => {
   const { text } = req.query;
@@ -132,7 +242,125 @@ router.get('/genius', checkApiKey, async (req, res) => {
     return res.status(500).json({ status: 'error', message: error.message });
   }
 });
+//=====================================================
+router.get('/spotify-download', checkApiKey, async (req, res) => {
+  const { url } = req.query;
 
+  if (!url) {
+    return res.status(400).json({ status: 'error', message: 'URL parameter is required' });
+  }
+
+  try {
+    const response = await axios.get(`https://deliriusapi-official.vercel.app/download/spotifydl?url=${encodeURIComponent(url)}`);
+
+    // Remove 'creator' and 'status' properties if they exist
+    const { creator, status, ...data } = response.data;
+
+    return res.json({
+      status: 'success',
+      Author: "Vishwa Mihiranga",
+      data // Return the modified data without 'creator' and 'status'
+    });
+  } catch (error) {
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+//=====================================================
+router.get('/instagram-download', checkApiKey, async (req, res) => {
+  const { url } = req.query;
+
+  // Check if URL parameter is provided
+  if (!url) {
+    return res.status(400).json({ status: 'error', message: 'URL parameter is required' });
+  }
+
+  try {
+    // Make a request to the external API for downloading Instagram content
+    const response = await axios.get(`https://deliriusapi-official.vercel.app/download/instagram?url=${encodeURIComponent(url)}`);
+
+    // Remove 'creator' and 'status' properties from the response data if they exist
+    const { creator, status, ...data } = response.data;
+
+    // Send a success response with the modified data
+    return res.json({
+      status: 'success',
+      Author: "Vishwa Mihiranga",
+      data // Return the modified data without 'creator' and 'status'
+    });
+  } catch (error) {
+    // Handle any errors that occur during the API request
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+//=====================================================
+const fg = require('api-dylux');
+// YouTube MP3
+router.get('/youtube-mp3', checkApiKey, async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ status: 'error',Author: 'Vishwa Mihiranga', message: 'URL parameter is required' });
+  }
+
+  try {
+    const data = await fg.yta(url);
+    return res.json({ status: 'success', data });
+  } catch (error) {
+    return res.status(500).json({ status: 'error',Author: 'Vishwa Mihiranga', message: error.message });
+  }
+});
+
+// YouTube MP4
+router.get('/youtube-mp4', checkApiKey, async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ status: 'error',Author: 'Vishwa Mihiranga', message: 'URL parameter is required' });
+  }
+
+  try {
+    const data = await fg.ytv(url);
+    return res.json({ status: 'success', data });
+  } catch (error) {
+    return res.status(500).json({ status: 'error',Author: 'Vishwa Mihiranga', message: error.message });
+  }
+});
+
+
+// Twitter
+router.get('/twitter', checkApiKey, async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ status: 'error',Author: 'Vishwa Mihiranga', message: 'URL parameter is required' });
+  }
+
+  try {
+    const data = await fg.twitter(url);
+    return res.json({ status: 'success', data });
+  } catch (error) {
+    return res.status(500).json({ status: 'error',Author: 'Vishwa Mihiranga', message: error.message });
+  }
+});
+
+// SoundCloud
+router.get('/soundcloud', checkApiKey, async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).json({ status: 'error',Author: 'Vishwa Mihiranga', message: 'URL parameter is required' });
+  }
+
+  try {
+    const data = await fg.soundcloudDl(url);
+    return res.json({ status: 'success', data });
+  } catch (error) {
+    return res.status(500).json({ status: 'error',Author: 'Vishwa Mihiranga', message: error.message });
+  }
+});
+
+
+//=====================================================
 router.get('/encode', checkApiKey, async (req, res) => {
   const { text } = req.query;
 
@@ -151,7 +379,269 @@ router.get('/encode', checkApiKey, async (req, res) => {
     return res.status(500).json({ status: 'error', message: error.message });
   }
 });
-//=======================================================
+//============================================================
+const { googleSearch, googleImage, googleTranslate } = require('nima-google-now');
+router.get('/google-image-search', async (req, res) => {
+  try {
+    // Get the query from the request; if none is provided, return an error
+    const query = req.query.q; // No default query
+
+    if (!query) {
+      // If no query is provided, return a 400 Bad Request response
+      return res.status(400).json({
+        status: 'error',
+        Author: 'Vishwa Mihiranga',
+        message: 'A search query is required.',
+      });
+    }
+
+    const result = await googleImage(query);
+
+    // Initialize sanitized result array
+    let sanitizedResult = [];
+
+    // Check if result is an array and sanitize it
+    if (Array.isArray(result)) {
+      sanitizedResult = result.map(item => {
+        // Destructure to remove "author" and "status" properties if they exist
+        const { authour, status, ...cleanedItem } = item;
+        return cleanedItem;
+      });
+    } else if (result) {
+      // If result is not an array but is valid, wrap it in an array
+      sanitizedResult = [result];
+    }
+
+    // If no valid result, return an empty array with a success response
+    if (sanitizedResult.length === 0) {
+      return res.json({
+        status: 'success',
+        Author: 'Vishwa Mihiranga',
+        data: [],
+      });
+    }
+
+    // Send the sanitized result with success status
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: sanitizedResult,
+    });
+  } catch (error) {
+    // Handle any errors and return a 500 status with the error message
+    return res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+//===================================================================
+router.get('/mistral-ai', async (req, res) => {
+  try {
+    const text = req.query.text; // Get the text parameter from the query
+
+    if (!text) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Text parameter is required.', // Return error if text is missing
+      });
+    }
+
+    // Make a request to the external API
+    const response = await axios.get(`https://api.gurusensei.workers.dev/mistral?text=${encodeURIComponent(text)}`);
+
+    // Check if the response from the external API is successful
+    if (response.status === 200) {
+      const { creator, ...dataWithoutCreator } = response.data; // Destructure and omit "creator"
+      return res.json({
+        status: 'success',
+        Author: 'Vishwa Mihiranga',
+        data: dataWithoutCreator, // Return data without the creator field
+      });
+    } else {
+      return res.status(response.status).json({
+        status: 'error',
+        Author: 'Vishwa Mihiranga',
+        message: 'Error fetching data from external API.',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      Author: 'Vishwa Mihiranga',
+      message: error.message, // Return error message in case of an exception
+    });
+  }
+});
+//=================================================================
+router.get('/llama-ai', async (req, res) => {
+  try {
+    const prompt = req.query.prompt; // Get the prompt parameter from the query
+
+    if (!prompt) {
+      return res.status(400).json({
+        status: 'error',
+        Author: 'Vishwa Mihiranga',
+        message: 'Prompt parameter is required.', // Return error if prompt is missing
+      });
+    }
+
+    // Make a request to the external Llama API
+    const response = await axios.get(`https://api.gurusensei.workers.dev/llama?prompt=${encodeURIComponent(prompt)}`);
+
+    // Check if the response from the external API is successful
+    if (response.status === 200) {
+      const { creator, ...dataWithoutCreator } = response.data; // Destructure and omit "creator" field
+      return res.json({
+        status: 'success',
+        Author: 'Vishwa Mihiranga',
+        data: dataWithoutCreator, // Return data without the creator field
+      });
+    } else {
+      return res.status(response.status).json({
+        status: 'error',
+        Author: 'Vishwa Mihiranga',
+        message: 'Error fetching data from external API.',
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      Author: 'Vishwa Mihiranga',
+      message: error.message, // Return error message in case of an exception
+    });
+  }
+});
+//==========================================================================
+const FormData = require('form-data');
+router.get('/dream-ai', async (req, res) => {
+  try {
+    const prompt = req.query.prompt; // Get the prompt parameter from the query
+
+    if (!prompt) {
+      return res.status(400).json({
+        status: 'error',
+        Author: 'Vishwa Mihiranga',
+        message: 'Prompt parameter is required.', // Return error if prompt is missing
+      });
+    }
+
+    // Make a request to the external Dream API
+    const response = await axios.get(`https://api.gurusensei.workers.dev/dream?prompt=${encodeURIComponent(prompt)}`, {
+      responseType: 'arraybuffer', // Get response as a buffer
+    });
+
+    // Check if the response from the external API is successful
+    if (response.status === 200) {
+      // Create a FormData instance for the ImgBB upload
+      const formData = new FormData();
+      formData.append('image', response.data, { filename: 'image.png' }); // Set a filename
+      formData.append('key', '9239fd3b50c89a683392ede29672318c'); // Your ImgBB API key
+
+      // Upload the image to ImgBB
+      const uploadResponse = await axios.post('https://api.imgbb.com/1/upload', formData, {
+        headers: {
+          ...formData.getHeaders(), // Include the necessary headers
+        },
+      });
+
+      // Check if the upload was successful
+      if (uploadResponse.data.success) {
+        return res.json({
+          status: 'success',
+          Author: 'Vishwa Mihiranga',
+          imageUrl: uploadResponse.data.data.url, // Return the direct link to the uploaded image
+        });
+      } else {
+        return res.status(uploadResponse.status).json({
+          status: 'error',
+          Author: 'Vishwa Mihiranga',
+          message: uploadResponse.data.message || 'Error uploading image to ImgBB.',
+        });
+      }
+    } else {
+      return res.status(response.status).json({
+        status: 'error',
+        Author: 'Vishwa Mihiranga',
+        message: 'Error fetching data from external API.',
+      });
+    }
+  } catch (error) {
+    console.error(error); // Log the error for debugging
+    return res.status(500).json({
+      status: 'error',
+      Author: 'Vishwa Mihiranga',
+      message: error.message, // Return error message in case of an exception
+    });
+  }
+});
+//===================================================================
+const gsmarena = require('gsmarena-api');
+// API to search for devices with full details
+
+// API to search for devices
+router.get('/gms-search', async (req, res) => {
+  try {
+    const query = req.query.q;
+
+    if (!query) {
+      return res.status(400).json({
+        status: 'error',
+        Author: 'Vishwa Mihiranga',
+        message: 'Search query is required.',
+      });
+    }
+
+    const devices = await gsmarena.search.search(query);
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: devices,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      Author: 'Vishwa Mihiranga',
+      message: error.message,
+    });
+  }
+});
+
+// API to get top devices
+router.get('/gms-top', async (req, res) => {
+  try {
+    const topDevices = await gsmarena.top.get();
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: topDevices,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      Author: 'Vishwa Mihiranga',
+      message: error.message,
+    });
+  }
+});
+
+// API to get deals
+router.get('/gms-deals', async (req, res) => {
+  try {
+    const deals = await gsmarena.deals.getDeals();
+    return res.json({
+      status: 'success',
+      Author: 'Vishwa Mihiranga',
+      data: deals,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: 'error',
+      Author: 'Vishwa Mihiranga',
+      message: error.message,
+    });
+  }
+});
+//===========================================================
+
+//=============================================================
 const { scrapeTheHackerNewsList,scrapeTheHackerNewsArticle,scrapeWABetaInfoList,scrapeWABetaInfoArticle } = require('../utils/thehackernews');
 router.get('/the-hacker-news-list', async (req, res) => {
   try {
